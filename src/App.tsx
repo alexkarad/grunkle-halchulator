@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { fetchLatestPrices, fetchMapping } from "./api/osrsPrices";
 import { buildProfitRows } from "./lib/calculateProfits";
+import { useDebouncedValue } from "./lib/useDebouncedValue";
 import type { ProfitRow } from "./types";
 import "./App.css";
 
@@ -15,6 +16,14 @@ function App() {
   const [f2pOnly, setF2pOnly] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 300);
+
+  const visibleRows = useMemo(() => {
+    const query = debouncedSearch.trim().toLowerCase();
+    if (!query) return rows;
+    return rows.filter((row) => row.name.toLowerCase().includes(query));
+  }, [rows, debouncedSearch]);
 
   async function refresh(nextF2pOnly = f2pOnly) {
     setStatus("loading");
@@ -66,6 +75,14 @@ function App() {
           F2P only
         </label>
 
+        <input
+          type="search"
+          className="search-input"
+          placeholder="Search items..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
         {lastUpdated && (
           <span className="last-updated">
             Last updated: {lastUpdated.toLocaleTimeString()}
@@ -83,7 +100,11 @@ function App() {
         <p className="empty">No profitable items found right now.</p>
       )}
 
-      {rows.length > 0 && (
+      {status === "idle" && rows.length > 0 && visibleRows.length === 0 && (
+        <p className="empty">No items match "{debouncedSearch}".</p>
+      )}
+
+      {visibleRows.length > 0 && (
         <table className="profit-table">
           <thead>
             <tr>
@@ -96,7 +117,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {visibleRows.map((row) => (
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{formatGp(row.buyPrice)}</td>
