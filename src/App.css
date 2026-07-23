@@ -1,0 +1,60 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  text-align: left;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  color: var(--text-muted, #888);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.f2p-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.last-updated {
+  font-size: 0.85em;
+  color: var(--text-muted, #888);
+}
+
+.error {
+  color: #d33;
+}
+
+.profit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profit-table th,
+.profit-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border, #333);
+  text-align: right;
+}
+
+.profit-table th:first-child,
+.profit-table td:first-child {
+  text-align: left;
+}
+
+.profit-table .profit {
+  font-weight: 600;
+  color: #2a8;
+}
